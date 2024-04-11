@@ -9,8 +9,8 @@ export class IndividualDetailSection extends Component {
         const details = props.details ?
             Object.assign({}, props.details)
             : {
-                firstName:"",
-                lastName:"",
+                firstName: "",
+                lastName: "",
                 email: "",
                 phone: ""
             }
@@ -246,7 +246,7 @@ export class CompanyDetailSection extends Component {
         let companyName = this.props.details ? this.props.details.name : ""
         let email = this.props.details ? this.props.details.email : ""
         let phone = this.props.details ? this.props.details.phone : ""
-        let location = {city:'',country:''}
+        let location = { city: '', country: '' }
         if (this.props.details && this.props.details.location) {
             location = this.props.details.location
         }
@@ -258,7 +258,7 @@ export class CompanyDetailSection extends Component {
                         <p>Name: {companyName}</p>
                         <p>Email: {email}</p>
                         <p>Phone: {phone}</p>
-                        <p> Location: {location.city}  {location.country}</p>
+                        <p> Location: {location.city == 0 ? '' : location.city + ','}  {location.country}</p>
                     </React.Fragment>
                     <button type="button" className="ui right floated teal button" onClick={this.openEdit}>Edit</button>
                 </div>
