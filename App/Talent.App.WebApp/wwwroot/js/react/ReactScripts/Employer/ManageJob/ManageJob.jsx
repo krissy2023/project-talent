@@ -5,7 +5,7 @@ import LoggedInBanner from '../../Layout/Banner/LoggedInBanner.jsx';
 import { LoggedInNavigation } from '../../Layout/LoggedInNavigation.jsx';
 import { JobSummaryCard } from './JobSummaryCard.jsx';
 import { BodyWrapper, loaderData } from '../../Layout/BodyWrapper.jsx';
-import { Pagination, Icon, Dropdown, Checkbox, Accordion, Form, Segment } from 'semantic-ui-react';
+import { Header, Container, Icon, Dropdown, DropdownMenu, DropdownItem, Input, } from 'semantic-ui-react';
 
 export default class ManageJob extends React.Component {
     constructor(props) {
@@ -16,10 +16,11 @@ export default class ManageJob extends React.Component {
         //console.log(loader)
         this.state = {
             loadJobs: [],
+            expiredJobsList: [],
             loaderData: loader,
             activePage: 1,
             sortBy: {
-                date: "desc"
+                sortbyDate: "desc"
             },
             filter: {
                 showActive: true,
@@ -29,11 +30,14 @@ export default class ManageJob extends React.Component {
                 showUnexpired: true
             },
             totalPages: 1,
-            activeIndex: ""
+            activeIndex: "",
+
         }
         this.loadData = this.loadData.bind(this);
         this.init = this.init.bind(this);
         this.loadNewData = this.loadNewData.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleDateFilter = this.handleDateFilter.bind(this);
         //your functions go here
     };
 
@@ -46,18 +50,36 @@ export default class ManageJob extends React.Component {
         //this.loadData(() =>
         //    this.setState({ loaderData })
         //)
-        
+
         //console.log(this.state.loaderData)
     }
 
     componentDidMount() {
-        this.init();
+        this.loadData();
     };
 
     loadData(callback) {
+        const data = Object.assign({}, this.state.filter, this.state.sortBy)
+        //console.log(data);
         var link = 'http://localhost:51689/listing/listing/getSortedEmployerJobs';
         var cookies = Cookies.get('talentAuthToken');
-       // your ajax call and other logic goes here
+        $.ajax({
+            url: link,
+            headers: {
+                'Authorization': 'Bearer ' + cookies,
+                'Content-Type': 'application/json'
+            },
+            type: "GET",
+            data: data,
+            success: function (res) {
+                //console.log(res.myJobs);
+                //console.log(res.expiredJobs)
+                this.setState({ loadJobs: res.myJobs });
+                this.setState({ expiredJobsList: res.expiredJobs })
+            }.bind(this)
+        })
+        this.init()
+
     }
 
     loadNewData(data) {
@@ -74,10 +96,127 @@ export default class ManageJob extends React.Component {
         });
     }
 
+    handleChange(e) {
+        if (e.target.name === 'showActive') {
+            this.setState(Object.assign(this.state.filter, { showActive: !this.state.filter.showActive }))
+        }
+        if (e.target.name === 'showClosed') {
+            this.setState(Object.assign(this.state.filter, { showClosed: !this.state.filter.showClosed }))
+        }
+        if (e.target.name === 'showDraft') {
+            this.setState(Object.assign(this.state.filter, { showDraft: !this.state.filter.showDraft }))
+        }
+        if (e.target.name === 'showExpired') {
+            this.setState(Object.assign(this.state.filter, { showExpired: !this.state.filter.showExpired }))
+        }
+        if (e.target.name === 'showUnexpired') {
+            this.setState(Object.assign(this.state.filter, { showUnexpired: !this.state.filter.showUnexpired }))
+        }
+
+        this.loadData();
+    }
+
+    handleDateFilter(e, data) {
+        console.log(data.value);
+        if (data.value === 'Oldest first') {
+            this.setState(Object.assign(this.state.sortBy, { sortbyDate: '' }))
+            this.loadData();
+        }
+        if (data.value === 'Newest first') {
+            this.setState(Object.assign(this.state.sortBy, { sortbyDate: 'desc' }))
+            this.loadData();
+        }
+    }
+
+
     render() {
+        const dateFilterOptions =
+            [
+                { text: 'Newest first', value: 'Newest first' },
+                { text: 'Oldest first', value: 'Oldest first' }
+
+            ]
+
+
         return (
             <BodyWrapper reload={this.init} loaderData={this.state.loaderData}>
-               <div className ="ui container">Your table goes here</div>
+                <React.Fragment>
+
+                    <div className='ui container'>
+                        <Header as='h1'> List of Jobs </Header>
+                        <div className='ui container'>
+                            <Icon name='filter'></Icon>
+                            <span>
+                                Filter:&nbsp;
+                                <Dropdown inline text='Choose filter'>
+                                    <DropdownMenu>
+                                        <DropdownItem>
+                                            <Input
+                                                style={{ padding: '0px 8px' }}
+                                                name='showActive' type='checkbox'
+                                                checked={this.state.filter.showActive ? true : false}
+                                                onClick={this.handleChange}>
+                                            </Input>
+                                            Active
+                                        </DropdownItem>
+                                        <DropdownItem>
+                                            <Input
+                                                style={{ padding: '0px 8px' }}
+                                                name='showClosed' type='checkbox'
+                                                checked={this.state.filter.showClosed ? true : false}
+                                                onClick={this.handleChange}>
+                                            </Input>
+                                            Closed
+                                        </DropdownItem>
+                                        <DropdownItem>
+                                            <Input
+                                                style={{ padding: '0px 8px' }}
+                                                name='showDraft' type='checkbox'
+                                                checked={this.state.filter.showDraft ? true : false}
+                                                onClick={this.handleChange}>
+                                            </Input>
+                                            Draft
+                                        </DropdownItem>
+                                        <DropdownItem>
+                                            <Input
+                                                style={{ padding: '0px 8px' }}
+                                                name='showExpired' type='checkbox'
+                                                checked={this.state.filter.showExpired ? true : false}
+                                                onClick={this.handleChange}>
+                                            </Input>
+                                            Expired
+                                        </DropdownItem>
+                                        <DropdownItem>
+                                            <Input
+                                                style={{ padding: '0px 8px' }}
+                                                name='showUnexpired'
+                                                type='checkbox'
+                                                checked={this.state.filter.showUnexpired ? true : false}
+                                                onClick={this.handleChange}>
+                                            </Input>
+                                            Unexpired
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </span>
+                            <Icon name='calendar alternate outline'></Icon>
+                            <span>
+                                Sort by date:&nbsp;
+                                <Dropdown inline defaultValue={dateFilterOptions[0].value} options={dateFilterOptions} onChange={this.handleDateFilter}>
+
+
+                                </Dropdown>
+                            </span>
+                        </div>
+                        {this.state.loadJobs.length == 0 ? <Container className='row-padded'>No Jobs Found</Container> :
+                            <JobSummaryCard
+                                jobsData={this.state.loadJobs}
+                                expiredJobs={this.state.expiredJobsList}
+                            />
+                        }
+                    </div>
+
+                </React.Fragment>
             </BodyWrapper>
         )
     }
