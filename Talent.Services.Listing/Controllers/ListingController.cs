@@ -195,22 +195,24 @@ namespace Talent.Services.Listing.Controllers
                 //TODO Draft not implemented yet
                 //if (!showDraft)
                 //{
-
+                
                 //}
 
                 if (sortbyDate == "desc")
                 {
                     var returnJobs = sortedJobs.OrderByDescending(x => x.CreatedOn).Skip((activePage - 1) * limit).Take(limit)
                         .Select(x => new { x.Id, x.Title, x.Summary, x.JobDetails.Location, x.ExpiryDate, x.Status, noOfSuggestions = x.TalentSuggestions != null && x.TalentSuggestions.Count != 0 ? x.TalentSuggestions.Count : 0 });
-                    return Json(new { Success = true, MyJobs = returnJobs, TotalCount = sortedJobs.Count() });
+					var returnExpiredJobs = sortedJobs.Where(x => x.ExpiryDate >= DateTime.UtcNow);
+					return Json(new { Success = true, MyJobs = returnJobs, expiredJobs = returnExpiredJobs, TotalCount = sortedJobs.Count() });
                 }
 
                 else
                 {
                     var returnJobs = sortedJobs.OrderBy(x => x.CreatedOn).Skip((activePage - 1) * limit).Take(limit)
                         .Select(x => new { x.Id, x.Title, x.Summary, x.JobDetails.Location, x.ExpiryDate, x.Status, noOfSuggestions = x.TalentSuggestions != null && x.TalentSuggestions.Count != 0 ? x.TalentSuggestions.Count : 0 });
-                    return Json(new { Success = true, MyJobs = returnJobs, TotalCount = sortedJobs.Count() });
-                }                
+					var returnExpiredJobs = sortedJobs.Where(x => x.ExpiryDate >= DateTime.UtcNow);
+					return Json(new { Success = true, MyJobs = returnJobs, expiredJobs = returnExpiredJobs, TotalCount = sortedJobs.Count() });
+                }
             }
             catch
             {
