@@ -5,7 +5,7 @@ import LoggedInBanner from '../../Layout/Banner/LoggedInBanner.jsx';
 import { LoggedInNavigation } from '../../Layout/LoggedInNavigation.jsx';
 import { JobSummaryCard } from './JobSummaryCard.jsx';
 import { BodyWrapper, loaderData } from '../../Layout/BodyWrapper.jsx';
-import { Header, Container, Icon, Dropdown, DropdownMenu, DropdownItem, Input, } from 'semantic-ui-react';
+import { Header, Container, Icon, Dropdown, DropdownMenu, DropdownItem, Input, Pagination, Grid } from 'semantic-ui-react';
 
 export default class ManageJob extends React.Component {
     constructor(props) {
@@ -60,6 +60,7 @@ export default class ManageJob extends React.Component {
 
     loadData(callback) {
         const data = Object.assign({}, this.state.filter, this.state.sortBy)
+        const numberOfJobs = this.state.loadJobs
         //console.log(data);
         var link = 'http://localhost:51689/listing/listing/getSortedEmployerJobs';
         var cookies = Cookies.get('talentAuthToken');
@@ -72,10 +73,11 @@ export default class ManageJob extends React.Component {
             type: "GET",
             data: data,
             success: function (res) {
-                //console.log(res.myJobs);
+                console.log(res.myJobs);
                 //console.log(res.expiredJobs)
                 this.setState({ loadJobs: res.myJobs });
                 this.setState({ expiredJobsList: res.expiredJobs })
+                this.setState({totalPages: numberOfJobs.length})
             }.bind(this)
         })
         this.init()
@@ -136,6 +138,8 @@ export default class ManageJob extends React.Component {
                 { text: 'Oldest first', value: 'Oldest first' }
 
             ]
+
+
 
 
         return (
@@ -214,6 +218,19 @@ export default class ManageJob extends React.Component {
                                 expiredJobs={this.state.expiredJobsList}
                             />
                         }
+                       <div className='text center'>
+                        <Pagination
+                                defaultActivePage={1}
+                                ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+                                firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+                                lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+                                prevItem={{ content: <Icon name='angle left' />, icon: true }}
+                                nextItem={{ content: <Icon name='angle right' />, icon: true }}
+                                totalPages={1}
+                            />
+                        </div>
+                       
+                      
                     </div>
 
                 </React.Fragment>
