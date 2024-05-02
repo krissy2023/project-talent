@@ -52,7 +52,7 @@ export default class EmployeeProfile extends React.Component {
     loadData() {
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
-            url: 'http://localhost:60290/profile/profile/getEmployerProfile',
+            url: 'https://talentservicesprofile20240501185614.azurewebsites.net/profile/profile/getEmployerProfile',
             headers: {
                 'Authorization': 'Bearer ' + cookies,
                 'Content-Type': 'application/json'
@@ -78,7 +78,7 @@ export default class EmployeeProfile extends React.Component {
     updateForComponentId(componentId, newValues) {
         let data = {};
         data[componentId] = newValues;
-        this.updateAndSaveData(data)
+            this.updateAndSaveData(data)
     }
 
     //updates component's state without saving data
@@ -92,10 +92,10 @@ export default class EmployeeProfile extends React.Component {
     //updates component's state and saves data
     updateAndSaveData(newData) {
         let newSD = Object.assign({}, this.state.employerData, newData)
-        this.setState({
-            employerData: newSD
-        }, this.saveData)
-    }
+            this.setState({
+                employerData: newSD
+            }, this.saveData)
+           }
 
     handleUserInput(event) {
 
@@ -150,30 +150,30 @@ export default class EmployeeProfile extends React.Component {
     }
 
     saveData() {
-
-        var cookies = Cookies.get('talentAuthToken');
-        $.ajax({
-            url: 'http://localhost:60290/profile/profile/saveEmployerProfile',
-            headers: {
-                'Authorization': 'Bearer ' + cookies,
-                'Content-Type': 'application/json'
-            },
-            type: "POST",
-            contentType: "application/json",
-            dataType: "json",
-            data: JSON.stringify(this.state.employerData),
-            success: function (res) {
-                if (res.success) {
-                    TalentUtil.notification.show("Employer details saved successfully", "success", null, null);
-                }
-                else {
+        
+            var cookies = Cookies.get('talentAuthToken');
+            $.ajax({
+                url: 'https://talentservicesprofile20240501185614.azurewebsites.net/profile/profile/saveEmployerProfile',
+                headers: {
+                    'Authorization': 'Bearer ' + cookies,
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(this.state.employerData),
+                success: function (res) {
+                    if (res.success) {
+                        TalentUtil.notification.show("Employer details saved successfully", "success", null, null);
+                    }
+                    else {
+                        TalentUtil.notification.show("Error while saving Employer details", "error", null, null);
+                    }
+                }.bind(this),
+                error: function (res) {
                     TalentUtil.notification.show("Error while saving Employer details", "error", null, null);
-                }
-            }.bind(this),
-            error: function (res) {
-                TalentUtil.notification.show("Error while saving Employer details", "error", null, null);
-            }.bind(this)
-        })
+                }.bind(this)
+            })
     }
 
     render() {
@@ -195,7 +195,7 @@ export default class EmployeeProfile extends React.Component {
                                                 componentId='primaryContact'
                                             />
                                         </FormItemWrapper>
-
+                                    
                                         <FormItemWrapper
                                             title='Company Contact Details'
                                             tooltip='Enter your company contact details'
@@ -206,7 +206,7 @@ export default class EmployeeProfile extends React.Component {
                                                 componentId='companyContact'
                                             />
                                         </FormItemWrapper>
-                                     
+
                                         <FormItemWrapper
                                             title='Display profile'
                                             tooltip='Toggle company profile visibility in the employer feed.'

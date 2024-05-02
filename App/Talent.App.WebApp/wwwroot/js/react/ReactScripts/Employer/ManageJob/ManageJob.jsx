@@ -62,7 +62,7 @@ export default class ManageJob extends React.Component {
         const data = Object.assign({}, this.state.filter, this.state.sortBy)
         const numberOfJobs = this.state.loadJobs
         //console.log(data);
-        var link = 'http://localhost:51689/listing/listing/getSortedEmployerJobs';
+        var link = 'https://talentservicestalent20240501185946.azurewebsites.net/listing/listing/getSortedEmployerJobs';
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
             url: link,
